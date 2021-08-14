@@ -21,17 +21,20 @@ type PointsPerYear = {
 interface PointsLineChartState {
   showTrendLines: boolean;
 
+  showAllDataPoints: boolean;
+
   showYears: ShowYears;
 }
 
 const defaultState: PointsLineChartState = {
   showTrendLines: false,
+  showAllDataPoints: true,
 
   showYears: {
     2016: false,
     2017: false,
     2018: false,
-    2019: true,
+    2019: false,
     2020: true,
     2021: true
   }
@@ -41,18 +44,6 @@ class PointsLineChart extends React.Component<
   PointsLineChartProps,
   PointsLineChartState
 > {
-  // state = {
-  //   showTrendLines: false,
-
-  //   showYears: {
-  //     2016: false,
-  //     2017: false,
-  //     2018: false,
-  //     2019: false,
-  //     2020: false,
-  //     2021: false
-  //   }
-  // };
 
   constructor(props = {}) {
     super(props);
@@ -66,6 +57,19 @@ class PointsLineChart extends React.Component<
       nextState.showYears = { ...prevState.showYears };
 
       console.warn("handleShowTrendLines");
+      console.warn(JSON.stringify(nextState));
+
+      return nextState;
+    });
+  };
+
+  handleShowAllDataPoints = () => {
+    this.setState(prevState => {
+      const nextState = { ...prevState };
+      nextState.showAllDataPoints = !prevState.showAllDataPoints;
+      nextState.showYears = { ...prevState.showYears };
+
+      console.warn("showAllDataPoints");
       console.warn(JSON.stringify(nextState));
 
       return nextState;
@@ -129,6 +133,8 @@ class PointsLineChart extends React.Component<
       borderDashOffset: 0.0,
       borderJoinStyle: "miter",
 
+      borderWidth: 3,
+
       // pointBorderColor: aliceBlueLineColour,
 
       pointBackgroundColor: "#fff",
@@ -176,7 +182,11 @@ class PointsLineChart extends React.Component<
       }
     }
 
-    const dataPointCount = pointsPerYear[2016].length;
+    // const dataPointCount = pointsPerYear[2016].length;
+    const dataPointCount =
+      this.state.showAllDataPoints ?
+        pointsPerYear[2016].length :
+        Math.max(pointsPerYear[2021].length + 10, 12);
 
     const labels: string[] = [];
 
@@ -210,7 +220,7 @@ class PointsLineChart extends React.Component<
           borderColor: aliceBlueLineColour,
           pointBorderColor: aliceBlueLineColour,
           pointHoverBackgroundColor: aliceBlueLineColour,
-          data: pointsRunningTotalsPerYear[2016],
+          data: pointsRunningTotalsPerYear[2016].slice(0, dataPointCount),
         });
       }
     }
@@ -224,7 +234,7 @@ class PointsLineChart extends React.Component<
           borderColor: purpleLineColour,
           pointBorderColor: purpleLineColour,
           pointHoverBackgroundColor: purpleLineColour,
-          data: pointsRunningTotalsPerYear[2017],
+          data: pointsRunningTotalsPerYear[2017].slice(0, dataPointCount),
         });
       }
     }
@@ -238,7 +248,7 @@ class PointsLineChart extends React.Component<
           borderColor: slateBlueLineColour,
           pointBorderColor: slateBlueLineColour,
           pointHoverBackgroundColor: slateBlueLineColour,
-          data: pointsRunningTotalsPerYear[2018],
+          data: pointsRunningTotalsPerYear[2018].slice(0, dataPointCount),
         });
       }
     }
@@ -253,7 +263,7 @@ class PointsLineChart extends React.Component<
           pointBorderColor: slateBlueLineColour,
           pointHoverBackgroundColor: slateBlueLineColour,
           borderDash: [],
-          data: pointsRunningTotalsPerYear[2019],
+          data: pointsRunningTotalsPerYear[2019].slice(0, dataPointCount),
         });
       }
     }
@@ -268,7 +278,7 @@ class PointsLineChart extends React.Component<
           pointBorderColor: purpleLineColour,
           pointHoverBackgroundColor: purpleLineColour,
           borderDash: [],
-          data: pointsRunningTotalsPerYear[2020],
+          data: pointsRunningTotalsPerYear[2020].slice(0, dataPointCount),
         });
       }
     }
@@ -283,7 +293,9 @@ class PointsLineChart extends React.Component<
           pointBorderColor: redLineColour,
           pointHoverBackgroundColor: redLineColour,
           borderDash: [],
-          data: pointsRunningTotalsPerYear[2021],
+          data: pointsRunningTotalsPerYear[2021].slice(0, dataPointCount),
+
+          borderWidth: 4
         });
       }
     }
@@ -370,6 +382,17 @@ class PointsLineChart extends React.Component<
           />
           <label className="custom-control-label" htmlFor="customCheck1">
             Trend Lines
+          </label>
+
+          <input
+            type="checkbox"
+            className="custom-control-input"
+            id="customCheck2"
+            onChange={() => this.handleShowAllDataPoints()}
+            checked={this.state.showAllDataPoints}
+          />
+          <label className="custom-control-label" htmlFor="customCheck2">
+            All Points
           </label>
 
           {/* <pre>
